@@ -45,6 +45,10 @@
 
   - The Letta TypeScript library provides convenient access to the Letta API.
 
+- [Letta NextJS](https://www.npmjs.com/package/@letta-ai/letta-nextjs)
+
+  - A Letta-Nextjs library full of functions that should make it easier to build applications on top of Letta and Next.js
+
 - [Next.js 15+](https://nextjs.org)
 
   - We leverage Next.js for its **server-side rendering (SSR)** and other performance optimizations, ensuring a fast and seamless user experience.
