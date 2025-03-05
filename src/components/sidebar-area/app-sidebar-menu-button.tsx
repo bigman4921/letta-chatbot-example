@@ -1,7 +1,7 @@
 import { SidebarMenuButton, useSidebar } from '@/components/ui/sidebar'
 import { useAgentContext } from '@/app/[agentId]/context/agent-context'
 import { useIsMobile } from '@/components/hooks/use-mobile'
-import { useAgentMessages } from '../hooks/use-agent-messages'
+import { useAgentMessages } from '@letta-ai/letta-react'
 import { SkeletonLoadBlock } from '@/components/ui/skeleton-load-block'
 import { DEFAULT_BOT_MESSAGE, NO_MESSAGES_LABEL } from '@/app/lib/labels'
 import { AgentState } from '@letta-ai/letta-client/api'
@@ -10,10 +10,12 @@ import OptionsMenu from './options-menu'
 export const AppSidebarMenuButton: React.FC<{
   agent: AgentState
 }> = ({ agent }) => {
-  const { data } = useAgentMessages(agent.id)
+  const { messages } = useAgentMessages({ agentId: agent.id })
   const isMobile = useIsMobile()
   const { toggleSidebar } = useSidebar()
   const { agentId, setAgentId } = useAgentContext()
+
+  const lastMessage = messages[messages.length - 1];
 
   return (
     <div
@@ -41,11 +43,11 @@ export const AppSidebarMenuButton: React.FC<{
               {agent.name}
             </span>
             <span className='block w-full truncate text-muted-foreground'>
-              {data ? (
-                data[data.length - 1].message === DEFAULT_BOT_MESSAGE ? (
+              {messages && messages.length > 0 ? (
+                'content' in lastMessage && lastMessage.content === DEFAULT_BOT_MESSAGE ? (
                   <i>{NO_MESSAGES_LABEL}</i>
                 ) : (
-                  `${data[data.length - 1].message}`
+                  `${'content' in lastMessage ? lastMessage.content : ''}`
                 )
               ) : (
                 <SkeletonLoadBlock className='w-full h-[1.43em]' />

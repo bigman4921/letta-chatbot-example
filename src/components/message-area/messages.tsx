@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { MessagePill } from '@/components/ui/message'
 import { useAgentContext } from '../../app/[agentId]/context/agent-context'
-import { useAgentMessages } from '../hooks/use-agent-messages'
+import { useAgentMessages } from '@letta-ai/letta-react'
 import { Ellipsis, LoaderCircle } from 'lucide-react'
 import { MessagePopover } from './message-popover'
 import { DEFAULT_BOT_MESSAGE, ERROR_CONNECTING } from '@/app/lib/labels'
@@ -11,7 +11,6 @@ import { UseSendMessageType } from '@/components/hooks/use-send-message'
 import { MESSAGE_TYPE } from '@/types'
 import { ReasoningMessageBlock } from '@/components/ui/reasoning-message'
 import { useReasoningMessage } from '@/components/toggle-reasoning-messages'
-import { AssistantMessageContent } from '@letta-ai/letta-client/api/types'
 import { extractMessageText } from '@/lib/utils'
 
 interface MessagesProps {
@@ -22,7 +21,7 @@ interface MessagesProps {
 export const Messages = (props: MessagesProps) => {
   const { isSendingMessage, sendMessage } = props
   const { agentId } = useAgentContext()
-  const { data: messages, isLoading } = useAgentMessages(agentId)
+  const { messages, isLoading } = useAgentMessages({ agentId })
   const { isEnabled } = useReasoningMessage()
   const { data: agents } = useAgents()
 
@@ -66,7 +65,7 @@ export const Messages = (props: MessagesProps) => {
       return false
     }
 
-    return messages.length === 3 && messages[0].message === DEFAULT_BOT_MESSAGE
+    return messages.length === 3 && messages[0].messageType === MESSAGE_TYPE.ASSISTANT_MESSAGE && messages[0].content === DEFAULT_BOT_MESSAGE
   }, [messages])
 
   return (
@@ -79,27 +78,24 @@ export const Messages = (props: MessagesProps) => {
             ) : (
               <div className='flex min-w-0 flex-1 flex-col gap-6 pt-4'>
                 {messages.map((message) => {
-                  if (
-                    [
-                      MESSAGE_TYPE.REASONING_MESSAGE,
-                      MESSAGE_TYPE.TOOL_CALL_MESSAGE
-                    ].includes(message.messageType)
-                  ) {
+                  if (message.messageType === MESSAGE_TYPE.REASONING_MESSAGE) {
                     return (
                       <ReasoningMessageBlock
                         key={message.id}
-                        message={extractMessageText(message.message)}
+                        message={extractMessageText(message.reasoning)}
                         isEnabled={isEnabled}
                       />
                     )
-                  } else {
+                  } else if (message.messageType === MESSAGE_TYPE.USER_MESSAGE || message.messageType === MESSAGE_TYPE.ASSISTANT_MESSAGE) {
                     return (
                       <MessagePill
                         key={message.id}
-                        message={extractMessageText(message.message)}
+                        message={extractMessageText(message.content)}
                         sender={message.messageType}
                       />
                     )
+                  } else {
+                    return null
                   }
                 })}
                 {isSendingMessage && (
