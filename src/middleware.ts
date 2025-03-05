@@ -3,14 +3,27 @@ import type { NextRequest } from 'next/server'
 import { v4 as uuid } from 'uuid'
 import { LETTA_UID } from '@/types'
 import { USE_COOKIE_BASED_AUTHENTICATION } from '@/constants'
+import { lettaMiddleware } from '@letta-ai/letta-nextjs/server';
 
-export function middleware(request: NextRequest) {
-  if (!USE_COOKIE_BASED_AUTHENTICATION) {
-    // do nothing if we're not using cookie based authentication
-    return NextResponse.next()
+export async function middleware(request: NextRequest) {
+  if (!process.env.LETTA_BASE_URL) {
+    throw new Error(`[ERROR] Missing configuration: LETTA_BASE_URL`)
   }
 
-  const response = NextResponse.next()
+  let response = await lettaMiddleware(request, {
+    baseUrl: process.env.LETTA_BASE_URL,
+    apiKey: process.env.LETTA_API_KEY,
+  });
+
+  if (!USE_COOKIE_BASED_AUTHENTICATION) {
+    // do nothing if we're not using cookie based authentication
+    return response
+  }
+
+  if (!response) {
+    response = NextResponse.next()
+  }
+
   let lettaUid = request.cookies.get(LETTA_UID)?.value
 
   if (!lettaUid) {
