@@ -7,6 +7,7 @@ import { SidebarProvider } from '@/components/ui/sidebar'
 import ContentLayout from './content-layout'
 import { ReasoningMessageProvider } from '@/components/toggle-reasoning-messages'
 import { DialogContextProvider } from '@/components/ui/agent-dialog'
+import { NextLettaProvider } from '@letta-ai/letta-nextjs/client';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,6 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <NextLettaProvider>
           <DialogContextProvider>
             <SidebarProvider>
               <AgentDetailsProvider>
@@ -44,6 +46,7 @@ export default function RootLayout({
               </AgentDetailsProvider>
             </SidebarProvider>
           </DialogContextProvider>
+          </NextLettaProvider>
         </Providers>
       </body>
     </html>
