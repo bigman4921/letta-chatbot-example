@@ -1,11 +1,11 @@
 import { useAgentContext } from '@/app/[agentId]/context/agent-context'
-import { useAgentState } from '../hooks/use-agent-state'
+import { useAgentState } from '@letta-ai/letta-react'
 import { SkeletonLoadBlock } from '../ui/skeleton-load-block'
 
 export function AgentCoreMemoryBlock() {
   const { agentId } = useAgentContext()
-  const { data, isLoading } = useAgentState(agentId)
-  const coreMemory = data?.memory?.blocks || []
+  const { agentState, isLoading } = useAgentState({ agentId })
+  const coreMemory = agentState?.memory?.blocks || []
 
   if (!coreMemory || isLoading) {
     return <SkeletonLoadBlock className='w-[18em] h-[6em]' />

@@ -1,7 +1,7 @@
 'use client'
 
 import { AgentCoreMemoryBlock } from './agent-core-memory-block'
-import { AgentArchivalMemory } from './agent-archival-memory'
+import { AgentPassages } from './agent-passages'
 import { useAgentDetails } from '../ui/agent-details'
 import { useIsMobile } from '../hooks/use-mobile'
 import { LeftBar } from '../ui/left-bar'
@@ -28,8 +28,8 @@ function AgentDetailDisplayContent() {
           component: <AgentCoreMemoryBlock />
         },
         {
-          title: 'ARCHIVAL MEMORY',
-          component: <AgentArchivalMemory />
+          title: 'PASSAGES',
+          component: <AgentPassages />
         }
       ].map((section, index) => (
         <section key={index} className='pb-4'>
